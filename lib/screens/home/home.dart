@@ -44,7 +44,9 @@ class _HomeState extends State<Home> {
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const AddEditPerson()
+                                    builder: (context) => const AddEditPerson(),
+                                    settings: RouteSettings(
+                                      arguments: {'person': Person(name: '', age: 0)})
                                   ),
                                 );
                               },
@@ -116,7 +118,17 @@ class _HomeState extends State<Home> {
       },
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => print(person.id!),
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddEditPerson(),
+              settings: RouteSettings(
+                arguments: {'person': person}
+              )
+            ),
+          );
+        },
         child: Column(
             children: <Widget>[
               Row(

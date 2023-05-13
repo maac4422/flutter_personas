@@ -14,7 +14,8 @@ class _AddEditPersonState extends State<AddEditPerson> {
   late SqliteService query;
   final nameController = TextEditingController();
   final ageController = TextEditingController();
-  late Person personToUpdate;
+  late Map args = ModalRoute.of(context)?.settings.arguments as Map;
+  late Person? personToUpdate = args['person'];
   bool isEditing = false;
 
   @override
@@ -28,6 +29,12 @@ class _AddEditPersonState extends State<AddEditPerson> {
 
   @override
   Widget build(BuildContext context) {
+    if(personToUpdate?.id != null) {
+      nameController.text = personToUpdate!.name;
+      ageController.text = personToUpdate!.age.toString();
+      isEditing = true;
+    }
+
     return Scaffold(
         backgroundColor: const Color.fromRGBO(247, 250, 252, 1.0),
         appBar: AppBar(
@@ -70,12 +77,13 @@ class _AddEditPersonState extends State<AddEditPerson> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async{
                       if (formKey.currentState!.validate()) {
-                        addOrEditPerson();
+                        await addOrEditPerson();
+                        if (context.mounted) Navigator.of(context).pop();
                       }
                     },
-                    child: const Text('Save'),
+                    child: Text(isEditing ? 'Edit' : 'Save'),
                   ),
                 ),
               ],
@@ -90,9 +98,8 @@ class _AddEditPersonState extends State<AddEditPerson> {
     String age = ageController.text;
 
     if (isEditing) {
-      personToUpdate.age = int.parse(age);
-      personToUpdate.name = name;
-      await updatePerson(personToUpdate);
+      final Person updatedPerson = Person(id: personToUpdate!.id,name: name,age: int.parse(age));
+      await updatePerson(updatedPerson!);
     } else {
       Person personToCreate = Person(name: name, age: int.parse(age));
       await addPerson(personToCreate);
