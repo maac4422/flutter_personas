@@ -115,6 +115,11 @@ class _HomeState extends State<Home> {
       key: UniqueKey(),
       onDismissed: (DismissDirection direction) async {
         await query.deletePerson(person.id!);
+        const toastMessage = 'Person deleted' ;
+        var snackBar = const SnackBar(content: Text(toastMessage));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       },
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
