@@ -1,4 +1,0 @@
-#Fri May 12 23:11:36 COT 2023
-base.0=/Users/miarenas/Programacion/flutter_personas/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
