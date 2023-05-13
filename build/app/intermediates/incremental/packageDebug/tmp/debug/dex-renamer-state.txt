@@ -1,4 +1,4 @@
-#Fri May 12 16:56:28 COT 2023
-base.0=/Users/miguelangelarenascorrea/Documents/Universidad/ProgramacionMobile/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+#Fri May 12 21:58:29 COT 2023
+base.0=/Users/miguelangelarenascorrea/Programacion/flutter_personas/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

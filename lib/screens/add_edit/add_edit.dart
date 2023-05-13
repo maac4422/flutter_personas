@@ -11,9 +11,20 @@ class AddEditPerson extends StatefulWidget {
 
 class _AddEditPersonState extends State<AddEditPerson> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  SqliteService query = SqliteService();
-  String name = '';
-  int age = 0;
+  late SqliteService query;
+  final nameController = TextEditingController();
+  final ageController = TextEditingController();
+  late Person personToUpdate;
+  bool isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    query = SqliteService();
+    query.initDb().whenComplete(() async {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +43,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
-                  onSaved: (String? value){name=value!;},
+                  controller: nameController,
                   decoration: const InputDecoration(
                     hintText: 'Name',
                   ),
@@ -44,7 +55,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
                   },
                 ),
                 TextFormField(
-                  onSaved: (String? value){age=value! as int;},
+                  controller: ageController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     hintText: 'Age',
@@ -60,11 +71,8 @@ class _AddEditPersonState extends State<AddEditPerson> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Validate will return true if the form is valid, or false if
-                      // the form is invalid.
                       if (formKey.currentState!.validate()) {
-                        Person personToSave = Person(id: null,name: name,age: age);
-                        query.createPerson(personToSave);
+                        addOrEditPerson();
                       }
                     },
                     child: const Text('Save'),
@@ -76,4 +84,35 @@ class _AddEditPersonState extends State<AddEditPerson> {
         )
     );
   }
+
+  Future<void> addOrEditPerson() async {
+    String name = nameController.text;
+    String age = ageController.text;
+
+    if (isEditing) {
+      personToUpdate.age = int.parse(age);
+      personToUpdate.name = name;
+      await updatePerson(personToUpdate);
+    } else {
+      Person personToCreate = Person(name: name, age: int.parse(age));
+      await addPerson(personToCreate);
+    }
+    resetData();
+    setState(() {});
+  }
+
+  Future<int> addPerson(Person person) async {
+    return await query.createPerson(person);
+  }
+
+  Future<int> updatePerson(Person person) async {
+    return await query.updatePerson(person);
+  }
+
+  void resetData() {
+    nameController.clear();
+    ageController.clear();
+    isEditing = false;
+  }
 }
+

@@ -44,8 +44,8 @@ class _HomeState extends State<Home> {
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (
-                                          context) => const AddEditPerson()),
+                                    builder: (context) => const AddEditPerson()
+                                  ),
                                 );
                               },
                               child: addIcon(),
@@ -102,8 +102,53 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildRow(Person person) {
-    return ListTile(
-      title: Text(person.name, style: const TextStyle(fontSize: 18.0)),
+    return Dismissible(
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: const Icon(Icons.delete_forever),
+      ),
+      key: UniqueKey(),
+      onDismissed: (DismissDirection direction) async {
+        await query.deletePerson(person.id!);
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => print(person.id!),
+        child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
+                        child: Text(
+                          person.name,
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 12.0),
+                        child: Text(
+                          "Age: ${person.age.toString()}",
+                          style: const TextStyle(fontSize: 18.0),
+                        ),
+                      ),
+                    ]
+                  )
+                ]
+              )
+            ]
+        )
+      )
     );
   }
 }

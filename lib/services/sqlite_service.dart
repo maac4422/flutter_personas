@@ -7,7 +7,7 @@ class SqliteService {
   static const String databaseName = "people.db";
   static Database? db;
 
-  static Future<Database> initDb() async {
+  Future<Database> initDb() async {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, databaseName);
     return db?? await openDatabase(
@@ -26,15 +26,15 @@ class SqliteService {
   }
 
   Future<int> createPerson(Person person) async {
-    final db = await SqliteService.initDb();
+    final db = await initDb();
     final id = await db.insert('People', person.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
     print("Person created! $id");
     return id;
   }
 
   Future<Person?> getPerson(int id) async {
-    final db = await SqliteService.initDb();
-    final Future<List<Map<String, dynamic>>> futureMaps = db.query('people', where: 'id = ?', whereArgs: [id]);
+    final db = await initDb();
+    final Future<List<Map<String, dynamic>>> futureMaps = db.query('People', where: 'id = ?', whereArgs: [id]);
     var maps = await futureMaps;
     if (maps.isNotEmpty) {
       return Person.fromDb(maps.first);
@@ -43,22 +43,24 @@ class SqliteService {
   }
 
   Future<List<Person>> getPeople() async {
-    final db = await SqliteService.initDb();
+    final db = await initDb();
     final List<Map<String, Object?>> queryResult = await db.query('People');
     return queryResult.map((e) => Person.fromMap(e)).toList();
   }
 
-  Future<void> updatePerson(Person person) async {
-    final db = await SqliteService.initDb();
+  Future<int> updatePerson(Person person) async {
+    final db = await initDb();
+    late int result;
     try {
-      await db.update("People",person.toMap() ,where: "id = ?", whereArgs: [person.id]);
+      result = await db.update("People",person.toMap() ,where: "id = ?", whereArgs: [person.id]);
     } catch (err) {
       debugPrint("Something went wrong when update an person: $err");
     }
+    return result;
   }
 
-  Future<void> deletePerson(String id) async {
-    final db = await SqliteService.initDb();
+  Future<void> deletePerson(int id) async {
+    final db = await initDb();
     try {
       await db.delete("People", where: "id = ?", whereArgs: [id]);
     } catch (err) {
