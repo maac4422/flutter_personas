@@ -15,11 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      builder: (context, child) => BaseWidget(child: child),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const Home()
-      },
+      home: Home()
     );
   }
 }

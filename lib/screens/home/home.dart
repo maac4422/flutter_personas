@@ -1,3 +1,4 @@
+import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/screens/add_edit/add_edit.dart';
 import 'package:app_personas/models/person.dart';
@@ -16,64 +17,66 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 250, 252, 1.0),
-      body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 10.0),
-                  child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            subheading('People'),
-                            GestureDetector(
-                              onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddEditPerson(),
-                                    settings: RouteSettings(
-                                      arguments: {'person': Person(name: '', age: 0)})
-                                  ),
-                                );
-                              },
-                              child: addIcon(),
+      body: Column(
+        children:[
+          Expanded(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                      color: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                      child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                subheading('People'),
+                                GestureDetector(
+                                  onTap: () async {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const AddEditPerson(),
+                                        settings: RouteSettings(
+                                          arguments: {'person': Person(name: '', age: 0)})
+                                      ),
+                                    ).then((value) => query.getPeople());
+                                  },
+                                  child: addIcon(),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ]
-                  )
-              ),
-              FutureBuilder<List<Person>>(
-                  future: query.getPeople(),
-                  initialData: const [],
-                  builder: (context, snapshot) {
-                    return snapshot.hasData ?
-                    ListView.builder(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.all(10.0),
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (context, i) {
-                        return _buildRow((snapshot.data![i]));
+                          ]
+                      )
+                  ),
+                  FutureBuilder<List<Person>>(
+                      future: query.getPeople(),
+                      initialData: const [],
+                      builder: (context, snapshot) {
+                        return snapshot.hasData ?
+                        ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(10.0),
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (context, i) {
+                            return _buildRow((snapshot.data![i]));
+                          },
+                        ) : const Center(
+                          child: CircularProgressIndicator(),
+                        );
                       },
-                    ) : const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
+                  )
+                ],
               )
-            ],
           )
-      ),
+          ),
+          BottomContainer()
+        ]
+      )
     );
   }
 

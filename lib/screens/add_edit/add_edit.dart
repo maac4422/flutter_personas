@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_personas/models/person.dart';
 import 'package:app_personas/services/sqlite_service.dart';
+import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
 
 class AddEditPerson extends StatefulWidget {
   const AddEditPerson({ Key? key }) : super(key: key);
@@ -42,59 +43,66 @@ class _AddEditPersonState extends State<AddEditPerson> {
           elevation: 0.0,
           title: const Text('Add or edit a person'),
         ),
-        body:Container(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Name',
-                  ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the name';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: ageController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: 'Age',
-                  ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the age';
-                    }
-                    return null;
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () async{
-                      if (formKey.currentState!.validate()) {
-                        await addOrEditPerson();
-                        final toastMessage = isEditing ? 'Person updated' : 'Person created';
-                        var snackBar = SnackBar(content: Text(toastMessage));
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Navigator.of(context).pop(context);
-                        }
-                      }
-                    },
-                    child: Text(isEditing ? 'Edit' : 'Save'),
-                  ),
-                ),
-              ],
+        body: Column(
+          children:[
+            Expanded(
+                child:Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          controller: nameController,
+                          decoration: const InputDecoration(
+                            hintText: 'Name',
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the name';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: ageController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            hintText: 'Age',
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the age';
+                            }
+                            return null;
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: ElevatedButton(
+                            onPressed: () async{
+                              if (formKey.currentState!.validate()) {
+                                await addOrEditPerson();
+                                final toastMessage = isEditing ? 'Person updated' : 'Person created';
+                                var snackBar = SnackBar(content: Text(toastMessage));
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  Navigator.of(context).pop(context);
+                                }
+                              }
+                            },
+                            child: Text(isEditing ? 'Edit' : 'Save'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                )
             ),
-          )
-        )
+            BottomContainer(),
+          ]
+        ),
     );
   }
 
