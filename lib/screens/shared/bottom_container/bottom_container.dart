@@ -3,8 +3,8 @@ import 'package:app_personas/services/sqlite_service.dart';
 import 'package:app_personas/models/person.dart';
 import 'package:collection/collection.dart';
 
-class TopContainer extends StatelessWidget {
-  TopContainer({super.key});
+class BottomContainer extends StatelessWidget {
+  BottomContainer({super.key});
   SqliteService query = SqliteService();
 
   @override
