@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_personas/screens/add_edit/add_edit.dart';
-import 'package:app_personas/screens/shared/top_container/top_container.dart';
 import 'package:app_personas/models/person.dart';
 import 'package:app_personas/services/sqlite_service.dart';
-//import 'package:flutter_sqlite/screens/shared/task_column.dart';
-//import 'package:percent_indicator/circular_percent_indicator.dart';
 
 
 class Home extends StatefulWidget {

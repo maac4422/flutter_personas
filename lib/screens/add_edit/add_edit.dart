@@ -84,7 +84,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
                         var snackBar = SnackBar(content: Text(toastMessage));
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop(context);
                         }
                       }
                     },

@@ -1,3 +1,4 @@
+import 'package:app_personas/screens/shared/BaseWidget/base_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/screens/home/home.dart';
 
@@ -10,11 +11,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'App Personas',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Home(),
+      builder: (context, child) => BaseWidget(child: child),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Home()
+      },
     );
   }
 }
