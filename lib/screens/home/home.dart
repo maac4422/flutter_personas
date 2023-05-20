@@ -15,6 +15,12 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   SqliteService query = SqliteService();
 
+  void updateData() {
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,13 +44,16 @@ class _HomeState extends State<Home> {
                                 subheading('People'),
                                 GestureDetector(
                                   onTap: () async {
-                                    Navigator.of(context).push(
+                                    String newUser = await Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const AddEditPerson(),
                                         settings: RouteSettings(
                                           arguments: {'person': Person(name: '', age: 0)})
                                       ),
-                                    ).then((value) => query.getPeople());
+                                    );
+                                    if(newUser == 'newUser') {
+                                      updateData();
+                                    }
                                   },
                                   child: addIcon(),
                                 ),
@@ -124,7 +133,7 @@ class _HomeState extends State<Home> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () async {
-          await Navigator.push(
+          String newUser = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const AddEditPerson(),
@@ -133,6 +142,9 @@ class _HomeState extends State<Home> {
               )
             ),
           );
+          if(newUser == 'newUser') {
+            updateData();
+          }
         },
         child: Column(
             children: <Widget>[
