@@ -83,8 +83,8 @@ class _AddEditPersonState extends State<AddEditPerson> {
                           child: ElevatedButton(
                             onPressed: () async{
                               if (formKey.currentState!.validate()) {
-                                await addOrEditPerson();
                                 final toastMessage = isEditing ? 'Person updated' : 'Person created';
+                                await addOrEditPerson();
                                 var snackBar = SnackBar(content: Text(toastMessage));
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(snackBar);

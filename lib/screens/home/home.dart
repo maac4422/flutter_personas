@@ -128,6 +128,7 @@ class _HomeState extends State<Home> {
         var snackBar = const SnackBar(content: Text(toastMessage));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          updateData();
         }
       },
       child: GestureDetector(
