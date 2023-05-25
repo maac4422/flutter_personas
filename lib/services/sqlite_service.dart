@@ -23,6 +23,18 @@ class SqliteService {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS People (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,name TEXT NOT NULL, age INTEGER NOT NULL)'
     );
+    await database.execute(
+        'CREATE TABLE IF NOT EXISTS Hobbies (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,name TEXT NOT NULL)'
+    );
+    await database.execute(
+        'CREATE TABLE IF NOT EXISTS Hobby_People ('
+            'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'
+            'personId INTEGER NOT NULL,'
+            'hobbyId INTEGER NOT NULL, '
+            'FOREIGN KEY(personId) REFERENCES People(id)'
+            'FOREIGN KEY(hobbyId) REFERENCES Hobbies(id)'
+            ')'
+    );
   }
 
   Future<int> createPerson(Person person) async {

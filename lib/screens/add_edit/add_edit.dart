@@ -80,20 +80,25 @@ class _AddEditPersonState extends State<AddEditPerson> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: ElevatedButton(
-                            onPressed: () async{
-                              if (formKey.currentState!.validate()) {
-                                final toastMessage = isEditing ? 'Person updated' : 'Person created';
-                                await addOrEditPerson();
-                                var snackBar = SnackBar(content: Text(toastMessage));
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                  Navigator.pop(context, 'newUser');
-                                }
-                              }
-                            },
-                            child: Text(isEditing ? 'Edit' : 'Save'),
-                          ),
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async{
+                                  if (formKey.currentState!.validate()) {
+                                    final toastMessage = isEditing ? 'Person updated' : 'Person created';
+                                    await addOrEditPerson();
+                                    var snackBar = SnackBar(content: Text(toastMessage));
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                      Navigator.pop(context, 'newUser');
+                                    }
+                                  }
+                                },
+                                child: Text(isEditing ? 'Edit' : 'Save'),
+                              ),
+                              addHobbyButton()
+                            ],
+                          )
                         ),
                       ],
                     ),
@@ -127,6 +132,25 @@ class _AddEditPersonState extends State<AddEditPerson> {
 
   Future<int> updatePerson(Person person) async {
     return await query.updatePerson(person);
+  }
+
+  Widget addHobbyButton() {
+    return  ElevatedButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    content: Stack(
+                        clipBehavior: Clip.none,
+                        children: const <Widget>[]
+                    )
+                );
+              }
+          );
+        },
+        child: const Text('Add Hobby')
+    );
   }
 
   void resetData() {

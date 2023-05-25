@@ -1,3 +1,4 @@
+import 'package:app_personas/screens/Login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/screens/home/home.dart';
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Home()
+      home: const Login()
     );
   }
 }
