@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app_personas/models/person.dart';
 import 'package:app_personas/services/sqlite_service.dart';
 import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
+import 'package:app_personas/screens/add_edit/add_hobby.dart';
 
 class AddEditPerson extends StatefulWidget {
   const AddEditPerson({ Key? key }) : super(key: key);
@@ -17,6 +18,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
   final ageController = TextEditingController();
   late Map args = ModalRoute.of(context)?.settings.arguments as Map;
   late Person? personToUpdate = args['person'];
+  late List<String> hobbiesToAdd = [];
   bool isEditing = false;
 
   @override
@@ -80,7 +82,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Row(
+                          child: Column(
                             children: [
                               ElevatedButton(
                                 onPressed: () async{
@@ -96,7 +98,8 @@ class _AddEditPersonState extends State<AddEditPerson> {
                                 },
                                 child: Text(isEditing ? 'Edit' : 'Save'),
                               ),
-                              addHobbyButton()
+                              addHobbyButton(),
+                              hobbiesList()
                             ],
                           )
                         ),
@@ -136,18 +139,16 @@ class _AddEditPersonState extends State<AddEditPerson> {
 
   Widget addHobbyButton() {
     return  ElevatedButton(
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          String hobbyToAdd = await showDialog(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                    content: Stack(
-                        clipBehavior: Clip.none,
-                        children: const <Widget>[]
-                    )
-                );
+                return addHobbyAlert();
               }
           );
+          setState(() {
+            hobbiesToAdd = List.from(hobbiesToAdd)..add(hobbyToAdd);
+          });
         },
         child: const Text('Add Hobby')
     );
@@ -157,6 +158,77 @@ class _AddEditPersonState extends State<AddEditPerson> {
     nameController.clear();
     ageController.clear();
     isEditing = false;
+  }
+
+  Widget addHobbyAlert() {
+    return AlertDialog(
+        title: const Text("Add hobby"),
+        content: Stack(
+            clipBehavior: Clip.none,
+            children: const <Widget>[
+              AddHobby()
+            ]
+        )
+    );
+  }
+
+  Widget hobbiesList() {
+    return(
+      ListView.builder(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(10.0),
+        itemCount: hobbiesToAdd.length,
+        itemBuilder: (context, i) {
+          return _buildHobbyRow(i,hobbiesToAdd[i]);
+        },
+      )
+    );
+  }
+
+  Widget _buildHobbyRow(int key,String hobby) {
+    return Dismissible(
+        direction: DismissDirection.endToStart,
+        background: Container(
+          color: Colors.red,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: const Icon(Icons.delete_forever),
+        ),
+        key: UniqueKey(),
+        onDismissed: (DismissDirection direction) {
+          setState(() {
+            hobbiesToAdd = List.from(hobbiesToAdd)..removeAt(key);
+          });
+
+        },
+        child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+                children: <Widget>[
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
+                                child: Text(
+                                  hobby,
+                                  style: const TextStyle(
+                                      fontSize: 22.0,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              ),
+                            ]
+                        )
+                      ]
+                  )
+                ]
+            )
+        )
+    );
   }
 }
 
