@@ -1,9 +1,10 @@
 import 'package:app_personas/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/services/sqlite_service.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class HobbiesStatistics extends StatefulWidget {
-  const HobbiesStatistics({ Key? key }) : super(key: key);
+  const HobbiesStatistics({Key? key}) : super(key: key);
 
   @override
   _HobbiesStatisticsState createState() => _HobbiesStatisticsState();
@@ -12,8 +13,13 @@ class HobbiesStatistics extends StatefulWidget {
 class _HobbiesStatisticsState extends State<HobbiesStatistics> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late SqliteService query;
-  final userController = TextEditingController();
-  final passwordController = TextEditingController();
+  final colorList = <Color>[
+    Colors.greenAccent,
+  ];
+
+  final dataMap = <String, double>{
+    "Flutter": 5,
+  };
 
   @override
   void initState() {
@@ -33,67 +39,40 @@ class _HobbiesStatisticsState extends State<HobbiesStatistics> {
         elevation: 0.0,
         title: const Text('Hobbies '),
       ),
-      body: Column(
-          children:[
-            Expanded(
-                child:Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          TextFormField(
-                            controller: userController,
-                            decoration: const InputDecoration(
-                              hintText: 'Username',
-                            ),
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter the username';
-                              }
-                              if (value != 'admin') {
-                                return 'The username is incorrect';
-                              }
-                              return null;
-                            },
-                          ),
-                          TextFormField(
-                            controller: passwordController,
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                            ),
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter the password';
-                              }
-                              if (value != 'password') {
-                                return 'The password is incorrect';
-                              }
-                              return null;
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: ElevatedButton(
-                              onPressed: () async{
-                                if (formKey.currentState!.validate()) {
-                                  if (context.mounted) {
-                                    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false);
-                                  }
-                                }
-                              },
-                              child: const Text('Login'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                )
-            )
-          ]
-      ),
+      body: Column(children: [
+        Expanded(
+            child: Container(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 20.0, horizontal: 50.0),
+                child: PieChart(
+                  dataMap: dataMap,
+                  animationDuration: const Duration(milliseconds: 800),
+                  chartLegendSpacing: 32,
+                  chartRadius: MediaQuery.of(context).size.width / 3.2,
+                  colorList: colorList,
+                  initialAngleInDegree: 0,
+                  chartType: ChartType.ring,
+                  ringStrokeWidth: 32,
+                  centerText: "HYBRID",
+                  legendOptions: const LegendOptions(
+                    showLegendsInRow: false,
+                    legendPosition: LegendPosition.right,
+                    showLegends: true,
+                    legendTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  chartValuesOptions: const ChartValuesOptions(
+                    showChartValueBackground: true,
+                    showChartValues: true,
+                    showChartValuesInPercentage: false,
+                    showChartValuesOutside: false,
+                    decimalPlaces: 1,
+                  ),
+                  // gradientList: ---To add gradient colors---
+                  // emptyColorGradient: ---Empty Color gradient---
+                )))
+      ]),
     );
   }
 }
-
