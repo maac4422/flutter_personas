@@ -14,14 +14,10 @@ class PersonHobbyService {
     return id;
   }
 
-  Future<PersonHobby?> getAllHobbiesFromPerson(int id) async {
+  Future<List<PersonHobby>> getAllHobbiesFromPerson(int id) async {
     final db = await sqliteService.initDb();
-    final Future<List<Map<String, dynamic>>> futureMaps = db.query(tableName, where: 'id = ?', whereArgs: [id]);
-    var maps = await futureMaps;
-    if (maps.isNotEmpty) {
-      return PersonHobby.fromDb(maps.first);
-    }
-    return null;
+    final List<Map<String, Object?>> queryResult = await db.query(tableName, where: 'personId = ?', whereArgs: [id]);
+    return queryResult.map((e) => PersonHobby.fromMap(e)).toList();
   }
 
   Future<List<PersonHobby>> getHobbies() async {

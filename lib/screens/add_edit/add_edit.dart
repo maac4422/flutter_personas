@@ -1,6 +1,10 @@
+import 'package:app_personas/models/hobby.dart';
+import 'package:app_personas/models/person_hobby.dart';
+import 'package:app_personas/services/person_hobby_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/models/person.dart';
 import 'package:app_personas/services/sqlite_service.dart';
+import 'package:app_personas/services/hobby_service.dart';
 import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
 import 'package:app_personas/screens/add_edit/add_hobby.dart';
 
@@ -14,29 +18,42 @@ class AddEditPerson extends StatefulWidget {
 class _AddEditPersonState extends State<AddEditPerson> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late SqliteService query;
+  late HobbyService queryHobby = HobbyService();
+  late PersonHobbyService queryPersonHobby = PersonHobbyService();
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   late Map args = ModalRoute.of(context)?.settings.arguments as Map;
   late Person? personToUpdate = args['person'];
-  late List<String> hobbiesToAdd = [];
+  late List<Hobby> hobbiesPersonList = [];
+  late List<Hobby> hobbiesToAdd = [];
+  late List<Hobby> hobbiesToDeleteIds = [];
   bool isEditing = false;
 
   @override
   void initState() {
     super.initState();
     query = SqliteService();
-    query.initDb().whenComplete(() async {
-      setState(() {});
+    query.initDb().whenComplete(() {
+      setState(() async {
+        if(personToUpdate?.id != null) {
+          nameController.text = personToUpdate!.name;
+          ageController.text = personToUpdate!.age.toString();
+          isEditing = true;
+          setInitHobbies();
+        }
+      });
+    });
+  }
+
+  Future<void> setInitHobbies() async {
+    var hobbies = await getPersonHobbies(personToUpdate!.id!);
+    setState(() {
+      hobbiesPersonList = List.from(hobbiesPersonList)..addAll(hobbies);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if(personToUpdate?.id != null) {
-      nameController.text = personToUpdate!.name;
-      ageController.text = personToUpdate!.age.toString();
-      isEditing = true;
-    }
 
     return Scaffold(
         backgroundColor: const Color.fromRGBO(247, 250, 252, 1.0),
@@ -130,11 +147,32 @@ class _AddEditPersonState extends State<AddEditPerson> {
   }
 
   Future<int> addPerson(Person person) async {
-    return await query.createPerson(person);
+    List hobbiesIds = await addHobbiesToDB(hobbiesToAdd);
+    int personId = await query.createPerson(person);
+    for( var i = 0 ; i < hobbiesIds.length; i++ ) {
+      PersonHobby personHobby = PersonHobby(personId: personId, hobbyId: hobbiesIds[i]);
+      await queryPersonHobby.createPersonHobby(personHobby);
+    }
+    return personId;
   }
 
   Future<int> updatePerson(Person person) async {
-    return await query.updatePerson(person);
+    List hobbiesIds = await addHobbiesToDB(hobbiesToAdd);
+    int personId = await query.updatePerson(person);
+    for( var i = 0 ; i < hobbiesIds.length; i++ ) {
+      PersonHobby personHobby = PersonHobby(personId: personId, hobbyId: hobbiesIds[i]);
+      await queryPersonHobby.createPersonHobby(personHobby);
+    }
+    return personId;
+  }
+
+  Future<List> addHobbiesToDB(List<Hobby> hobbies) async {
+    List hobbiesIds = [];
+    for( var i = 0 ; i < hobbies.length; i++ ) {
+      int hobbyId = await queryHobby.createHobby(hobbies[i]);
+      hobbiesIds.add(hobbyId);
+    }
+    return hobbiesIds;
   }
 
   Widget addHobbyButton() {
@@ -146,9 +184,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
                 return addHobbyAlert();
               }
           );
-          setState(() {
-            hobbiesToAdd = List.from(hobbiesToAdd)..add(hobbyToAdd);
-          });
+          addHobby(hobbyToAdd);
         },
         child: const Text('Add Hobby')
     );
@@ -177,15 +213,15 @@ class _AddEditPersonState extends State<AddEditPerson> {
       ListView.builder(
         shrinkWrap: true,
         padding: const EdgeInsets.all(10.0),
-        itemCount: hobbiesToAdd.length,
+        itemCount: hobbiesPersonList.length,
         itemBuilder: (context, i) {
-          return _buildHobbyRow(i,hobbiesToAdd[i]);
+          return _buildHobbyRow(hobbiesPersonList[i]?.id,hobbiesPersonList[i].name);
         },
       )
     );
   }
 
-  Widget _buildHobbyRow(int key,String hobby) {
+  Widget _buildHobbyRow(int? id,String hobby) {
     return Dismissible(
         direction: DismissDirection.endToStart,
         background: Container(
@@ -196,10 +232,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
         ),
         key: UniqueKey(),
         onDismissed: (DismissDirection direction) {
-          setState(() {
-            hobbiesToAdd = List.from(hobbiesToAdd)..removeAt(key);
-          });
-
+          deleteHobby(id);
         },
         child: GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -229,6 +262,37 @@ class _AddEditPersonState extends State<AddEditPerson> {
             )
         )
     );
+  }
+
+  void deleteHobby(int? id) {
+    setState(() {
+      if(id != null){
+        if(isEditing){
+          //hobbiesToDeleteIds = List.from(hobbiesToDeleteIds)..add(id);
+        }
+      }
+      //hobbiesToAdd = List.from(hobbiesToAdd)..removeAt(key);
+    });
+  }
+
+  void addHobby(String hobby){
+    setState(() {
+      Hobby hobbyToAdd = Hobby(name: hobby);
+      hobbiesToAdd = List.from(hobbiesToAdd)..add(hobbyToAdd);
+      hobbiesPersonList = List.from(hobbiesPersonList)..add(hobbyToAdd);
+    });
+  }
+
+  Future<List<Hobby>> getPersonHobbies(int id) async {
+    List<Hobby> hobbies = [];
+    List<PersonHobby> personHobbies = await queryPersonHobby.getAllHobbiesFromPerson(id);
+    for( var i = 0 ; i < personHobbies.length; i++ ) {
+      Hobby? hobby = await queryHobby.getHobby(personHobbies[i].hobbyId);
+      if(hobby != null) {
+        hobbies.add(hobby);
+      }
+    }
+    return hobbies;
   }
 }
 
