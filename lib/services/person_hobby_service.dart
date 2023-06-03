@@ -34,4 +34,22 @@ class PersonHobbyService {
       debugPrint("Something went wrong when deleting an person hobby: $err");
     }
   }
+
+  Future<List<Map>?> getHobbiesStatistics() async {
+    final db = await sqliteService.initDb();
+    try {
+      List<Map> result = await db.rawQuery('''
+          SELECT LOWER(h.name) AS hobby_name, COUNT(*) AS hobby_count,
+          COUNT(DISTINCT ph.personId) AS person_count
+      FROM Hobbies h
+      JOIN Hobby_People ph ON h.id = ph.hobbyId
+      GROUP BY LOWER(h.name)
+      ORDER BY hobby_count DESC
+      ''');
+      return result;
+    } catch (err) {
+      debugPrint("Something went wrong when deleting an person hobby: $err");
+    }
+    return null;
+  }
 }

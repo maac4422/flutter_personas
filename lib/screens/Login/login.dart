@@ -4,6 +4,8 @@ import 'package:app_personas/models/person.dart';
 import 'package:app_personas/services/sqlite_service.dart';
 import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
 
+import '../hobbies_statistics/hobbies_statistics.dart';
+
 class Login extends StatefulWidget {
   const Login({ Key? key }) : super(key: key);
 
@@ -81,7 +83,7 @@ class _LoginState extends State<Login> {
                               onPressed: () async{
                                 if (formKey.currentState!.validate()) {
                                   if (context.mounted) {
-                                    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false);
+                                    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => const HobbiesStatistics()), (Route<dynamic> route) => false);
                                   }
                                 }
                               },

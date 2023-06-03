@@ -34,7 +34,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
     super.initState();
     query = SqliteService();
     query.initDb().whenComplete(() {
-      setState(() async {
+      setState(() {
         if(personToUpdate?.id != null) {
           nameController.text = personToUpdate!.name;
           ageController.text = personToUpdate!.age.toString();
