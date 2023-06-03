@@ -1,3 +1,5 @@
+import 'package:app_personas/screens/hobbies_statistics/hobbies_statistics.dart';
+import 'package:app_personas/screens/people_list/people_list.dart';
 import 'package:app_personas/screens/shared/bottom_container/bottom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:app_personas/screens/add_edit/add_edit.dart';
@@ -13,172 +15,37 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  SqliteService query = SqliteService();
-
-  void updateData() {
-    setState(() {
-
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 250, 252, 1.0),
-      body: Column(
-        children:[
-          Expanded(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Container(
-                      color: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                subheading('People'),
-                                GestureDetector(
-                                  onTap: () async {
-                                    String newUser = await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const AddEditPerson(),
-                                        settings: RouteSettings(
-                                          arguments: {'person': Person(name: '', age: 0)})
-                                      ),
-                                    );
-                                    if(newUser == 'newUser') {
-                                      updateData();
-                                    }
-                                  },
-                                  child: addIcon(),
-                                ),
-                              ],
-                            ),
-                          ]
-                      )
-                  ),
-                  FutureBuilder<List<Person>>(
-                      future: query.getPeople(),
-                      initialData: const [],
-                      builder: (context, snapshot) {
-                        return snapshot.hasData ?
-                        ListView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(10.0),
-                          itemCount: snapshot.data?.length,
-                          itemBuilder: (context, i) {
-                            return _buildRow((snapshot.data![i]));
-                          },
-                        ) : const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                  )
+      body: renderTabs()
+    );
+  }
+
+  Widget renderTabs() {
+    return (
+        DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              bottom: const TabBar(
+                tabs: [
+                  Tab(icon: Icon(Icons.people)),
+                  Tab(icon: Icon(Icons.bar_chart_sharp)),
                 ],
-              )
-          )
-          ),
-          BottomContainer()
-        ]
-      )
-    );
-  }
-
-  static CircleAvatar addIcon() {
-    return const CircleAvatar(
-      radius: 25.0,
-      backgroundColor: Color.fromRGBO(94, 114, 228, 1.0),
-      child: Icon(
-        Icons.add,
-        size: 20.0,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  Text subheading(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-          color: Color.fromRGBO(94, 114, 228, 1.0),
-          fontSize: 20.0,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2),
-    );
-  }
-
-  Widget _buildRow(Person person) {
-    return Dismissible(
-      direction: DismissDirection.endToStart,
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: const Icon(Icons.delete_forever),
-      ),
-      key: UniqueKey(),
-      onDismissed: (DismissDirection direction) async {
-        await query.deletePerson(person.id!);
-        const toastMessage = 'Person deleted' ;
-        var snackBar = const SnackBar(content: Text(toastMessage));
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          updateData();
-        }
-      },
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () async {
-          String newUser = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddEditPerson(),
-              settings: RouteSettings(
-                arguments: {'person': person}
-              )
+              ),
+              title: const Text('Tabs Demo'),
             ),
-          );
-          if(newUser == 'newUser') {
-            updateData();
-          }
-        },
-        child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
-                        child: Text(
-                          person.name,
-                          style: const TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 12.0),
-                        child: Text(
-                          "Age: ${person.age.toString()}",
-                          style: const TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                    ]
-                  )
-                ]
-              )
-            ]
+            body: const TabBarView(
+              children: [
+                PeopleList(),
+                HobbiesStatistics(),
+              ],
+            ),
+          ),
         )
-      )
     );
   }
 }

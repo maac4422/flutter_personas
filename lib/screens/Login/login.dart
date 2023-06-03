@@ -83,7 +83,7 @@ class _LoginState extends State<Login> {
                               onPressed: () async{
                                 if (formKey.currentState!.validate()) {
                                   if (context.mounted) {
-                                    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => const HobbiesStatistics()), (Route<dynamic> route) => false);
+                                    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false);
                                   }
                                 }
                               },
