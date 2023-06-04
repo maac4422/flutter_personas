@@ -63,6 +63,9 @@ class _LoginState extends State<Login> {
                             },
                           ),
                           TextFormField(
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
                             controller: passwordController,
                             decoration: const InputDecoration(
                               hintText: 'Password',
