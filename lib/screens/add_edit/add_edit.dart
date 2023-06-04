@@ -220,6 +220,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
     return(
       ListView.builder(
         shrinkWrap: true,
+        itemExtent: 60.0,
         padding: const EdgeInsets.all(10.0),
         itemCount: hobbiesPersonList.length,
         itemBuilder: (context, i) {
@@ -246,25 +247,31 @@ class _AddEditPersonState extends State<AddEditPerson> {
             behavior: HitTestBehavior.opaque,
             child: Column(
                 children: <Widget>[
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
-                                child: Text(
-                                  hobby,
-                                  style: const TextStyle(
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                        color: Colors.grey.shade300,
+                      ),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
+                                  child: Text(
+                                    hobby,
+                                    style: const TextStyle(
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ]
-                        )
-                      ]
+                              ]
+                          )
+                        ]
+                    )
                   )
                 ]
             )

@@ -36,7 +36,7 @@ class _HomeState extends State<Home> {
                   Tab(icon: Icon(Icons.bar_chart_sharp)),
                 ],
               ),
-              title: const Text('Tabs Demo'),
+              title: const Text('App Personas'),
             ),
             body: const TabBarView(
               children: [
