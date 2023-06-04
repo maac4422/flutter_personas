@@ -69,6 +69,7 @@ class _PeopleListState extends State<PeopleList> {
                               return snapshot.hasData ?
                               ListView.builder(
                                 shrinkWrap: true,
+                                itemExtent: 100.0,
                                 padding: const EdgeInsets.all(10.0),
                                 itemCount: snapshot.data?.length,
                                 itemBuilder: (context, i) {
@@ -149,32 +150,38 @@ class _PeopleListState extends State<PeopleList> {
             },
             child: Column(
                 children: <Widget>[
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
-                                child: Text(
-                                  person.name,
-                                  style: const TextStyle(
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold
+                  Container(
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                        color: Colors.grey.shade300,
+                     ),
+                    child:Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 6.0),
+                                    child: Text(
+                                      person.name,
+                                      style: const TextStyle(
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 12.0),
-                                child: Text(
-                                  "Age: ${person.age.toString()}",
-                                  style: const TextStyle(fontSize: 18.0),
-                                ),
-                              ),
-                            ]
-                        )
-                      ]
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 12.0),
+                                    child: Text(
+                                      "Age: ${person.age.toString()}",
+                                      style: const TextStyle(fontSize: 18.0),
+                                    ),
+                                  ),
+                                ]
+                            )
+                          ]
+                      )
                   )
                 ]
             )
