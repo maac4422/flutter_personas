@@ -1,4 +1,5 @@
 import 'package:app_personas/services/sqlite_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:app_personas/models/hobby.dart';
 
@@ -27,5 +28,14 @@ class HobbyService {
     final db = await sqliteService.initDb();
     final List<Map<String, Object?>> queryResult = await db.query(tableName);
     return queryResult.map((e) => Hobby.fromMap(e)).toList();
+  }
+
+  Future<void> deleteHobby(int id) async {
+    final db = await sqliteService.initDb();
+    try {
+      await db.delete(tableName, where: "id = ?", whereArgs: [id]);
+    } catch (err) {
+      debugPrint("Something went wrong when deleting an hobby: $err");
+    }
   }
 }

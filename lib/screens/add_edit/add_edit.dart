@@ -158,6 +158,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
 
   Future<int> updatePerson(Person person) async {
     List hobbiesIds = await addHobbiesToDB(hobbiesToAdd);
+    await deleteHobbiesToDB(hobbiesToDeleteIds);
     int personId = await query.updatePerson(person);
     for( var i = 0 ; i < hobbiesIds.length; i++ ) {
       PersonHobby personHobby = PersonHobby(personId: personId, hobbyId: hobbiesIds[i]);
@@ -173,6 +174,13 @@ class _AddEditPersonState extends State<AddEditPerson> {
       hobbiesIds.add(hobbyId);
     }
     return hobbiesIds;
+  }
+
+  Future<void> deleteHobbiesToDB(List<Hobby> hobbies) async {
+    for( var i = 0 ; i < hobbies.length; i++ ) {
+      queryPersonHobby.deletePersonHobby(personToUpdate!.id!, hobbies[i].id!);
+      queryHobby.deleteHobby(hobbies[i]!.id!);
+    }
   }
 
   Widget addHobbyButton() {
@@ -215,13 +223,13 @@ class _AddEditPersonState extends State<AddEditPerson> {
         padding: const EdgeInsets.all(10.0),
         itemCount: hobbiesPersonList.length,
         itemBuilder: (context, i) {
-          return _buildHobbyRow(hobbiesPersonList[i]?.id,hobbiesPersonList[i].name);
+          return _buildHobbyRow(hobbiesPersonList[i]?.id,hobbiesPersonList[i].name, i);
         },
       )
     );
   }
 
-  Widget _buildHobbyRow(int? id,String hobby) {
+  Widget _buildHobbyRow(int? id,String hobby, int index) {
     return Dismissible(
         direction: DismissDirection.endToStart,
         background: Container(
@@ -232,7 +240,7 @@ class _AddEditPersonState extends State<AddEditPerson> {
         ),
         key: UniqueKey(),
         onDismissed: (DismissDirection direction) {
-          deleteHobby(id);
+          deleteHobby(id, index, hobby);
         },
         child: GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -264,14 +272,19 @@ class _AddEditPersonState extends State<AddEditPerson> {
     );
   }
 
-  void deleteHobby(int? id) {
+  void deleteHobby(int? id, int index, String hobbyName) {
     setState(() {
       if(id != null){
         if(isEditing){
-          //hobbiesToDeleteIds = List.from(hobbiesToDeleteIds)..add(id);
+          Hobby hobbyToDelete = hobbiesPersonList.elementAt(index);
+          hobbiesToDeleteIds = List.from(hobbiesToDeleteIds)..add(hobbyToDelete);
         }
+      }else {
+        int hobbyToDelete = hobbiesToAdd.indexWhere((element) => element.name == hobbyName);
+        hobbiesToAdd = List.from(hobbiesToAdd)
+          ..removeAt(hobbyToDelete);
       }
-      //hobbiesToAdd = List.from(hobbiesToAdd)..removeAt(key);
+      hobbiesPersonList = List.from(hobbiesPersonList)..removeAt(index);
     });
   }
 

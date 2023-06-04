@@ -26,10 +26,10 @@ class PersonHobbyService {
     return queryResult.map((e) => PersonHobby.fromMap(e)).toList();
   }
 
-  Future<void> deletePersonHobby(int id) async {
+  Future<void> deletePersonHobby(int personId, int hobbyId) async {
     final db = await sqliteService.initDb();
     try {
-      await db.delete(tableName, where: "id = ?", whereArgs: [id]);
+      await db.delete(tableName, where: "personId = ?, hobbyId = '", whereArgs: [personId, hobbyId]);
     } catch (err) {
       debugPrint("Something went wrong when deleting an person hobby: $err");
     }
