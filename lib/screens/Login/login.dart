@@ -41,6 +41,12 @@ class _LoginState extends State<Login> {
           children:[
             Expanded(
                 child:Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/login-background.jpeg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
                     child: Form(
                       key: formKey,
